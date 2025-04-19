@@ -18,8 +18,8 @@ function loadScore() {
   if (fs.existsSync(SCORE_FILE)) {
     try {
       return JSON.parse(fs.readFileSync(SCORE_FILE, 'utf8'));
-    } catch (err) {
-      console.error('Error loading score file. Resetting score.');
+    } catch {
+      console.error('Score file corrupted. Starting fresh.');
     }
   }
   return { players: {}, history: [] };
@@ -164,7 +164,7 @@ function endGame(result) {
     recordGame(result);
   }
 
-  displayLeaderboard();
+  showLeaderboard(true);
 
   rl.question('\nPlay again? (y/n): ', answer => {
     if (answer.toLowerCase() === 'y') {
@@ -177,18 +177,22 @@ function endGame(result) {
   });
 }
 
-function displayLeaderboard() {
+function showLeaderboard(includeCurrentPlayer = false) {
   console.log('\n--- Leaderboard ---');
-  const players = Object.entries(scoreData.players);
-  if (players.length === 0) {
-    console.log('No scores recorded yet.');
-    return;
+  const ranked = Object.entries(scoreData.players)
+    .map(([name, stats]) => ({ name, wins: stats.wins, draws: stats.draws }))
+    .sort((a, b) => b.wins - a.wins || b.draws - a.draws);
+
+  const top10 = ranked.slice(0, 10);
+  top10.forEach((p, i) => {
+    console.log(`${i + 1}. ${p.name} - Wins: ${p.wins}, Draws: ${p.draws}`);
+  });
+
+  if (includeCurrentPlayer && !top10.some(p => p.name === playerName)) {
+    const rank = ranked.findIndex(p => p.name === playerName) + 1;
+    const playerStats = scoreData.players[playerName];
+    console.log(`\nYour rank: ${rank}. ${playerName} - Wins: ${playerStats.wins}, Draws: ${playerStats.draws}`);
   }
-  players
-    .sort(([, a], [, b]) => b.wins - a.wins)
-    .forEach(([name, stats], i) => {
-      console.log(`${i + 1}. ${name} - Wins: ${stats.wins}, Draws: ${stats.draws}`);
-    });
 }
 
 function playTurn() {
@@ -216,10 +220,11 @@ function playTurn() {
   });
 }
 
-// Start
+// Game start
 rl.question('Enter your name: ', name => {
   playerName = name.trim() || 'Player';
   console.log(`Welcome, ${playerName}! You are playing as ${humanSymbol}`);
   resetBoard();
+  showLeaderboard(); // Top 10 only on game start
   playTurn();
 });
