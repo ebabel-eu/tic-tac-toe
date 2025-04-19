@@ -4,15 +4,16 @@ const board = [
     [' ', ' ', ' '],
   ];
   
-  let currentPlayer = 'X';
+  let currentPlayer = 'X'; // Human
+  let aiPlayer = 'O';      // AI
   
   function printBoard() {
     console.log(board.map(row => row.join('|')).join('\n-+-+-\n'));
   }
   
-  function makeMove(row, col) {
+  function makeMove(row, col, player) {
     if (board[row][col] === ' ') {
-      board[row][col] = currentPlayer;
+      board[row][col] = player;
       return true;
     }
     return false;
@@ -20,15 +21,12 @@ const board = [
   
   function checkWin(player) {
     const winLines = [
-      // Rows
       [[0, 0], [0, 1], [0, 2]],
       [[1, 0], [1, 1], [1, 2]],
       [[2, 0], [2, 1], [2, 2]],
-      // Columns
       [[0, 0], [1, 0], [2, 0]],
       [[0, 1], [1, 1], [2, 1]],
       [[0, 2], [1, 2], [2, 2]],
-      // Diagonals
       [[0, 0], [1, 1], [2, 2]],
       [[0, 2], [1, 1], [2, 0]],
     ];
@@ -42,6 +40,18 @@ const board = [
     return board.flat().every(cell => cell !== ' ');
   }
   
+  function aiMove() {
+    for (let r = 0; r < 3; r++) {
+      for (let c = 0; c < 3; c++) {
+        if (board[r][c] === ' ') {
+          makeMove(r, c, aiPlayer);
+          console.log(`AI moves to ${r}, ${c}`);
+          return;
+        }
+      }
+    }
+  }
+  
   function playGame() {
     const readline = require('readline').createInterface({
       input: process.stdin,
@@ -50,12 +60,12 @@ const board = [
   
     function promptMove() {
       printBoard();
-      readline.question(`Player ${currentPlayer}, enter row and column (e.g., 0 1): `, (input) => {
+      readline.question(`Your move (row col): `, (input) => {
         const [rowStr, colStr] = input.trim().split(' ');
         const row = parseInt(rowStr);
         const col = parseInt(colStr);
   
-        if (isNaN(row) || isNaN(col) || row > 2 || col > 2 || !makeMove(row, col)) {
+        if (isNaN(row) || isNaN(col) || row > 2 || col > 2 || !makeMove(row, col, currentPlayer)) {
           console.log('Invalid move. Try again.');
           promptMove();
           return;
@@ -63,7 +73,7 @@ const board = [
   
         if (checkWin(currentPlayer)) {
           printBoard();
-          console.log(`Player ${currentPlayer} wins!`);
+          console.log('You win!');
           readline.close();
           return;
         }
@@ -75,7 +85,22 @@ const board = [
           return;
         }
   
-        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        // AI's turn
+        aiMove();
+        if (checkWin(aiPlayer)) {
+          printBoard();
+          console.log('AI wins!');
+          readline.close();
+          return;
+        }
+  
+        if (isDraw()) {
+          printBoard();
+          console.log('It\'s a draw!');
+          readline.close();
+          return;
+        }
+  
         promptMove();
       });
     }
