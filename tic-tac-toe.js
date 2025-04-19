@@ -1,19 +1,33 @@
+const fs = require('fs');
 const readline = require('readline');
 
-let board, currentPlayer;
-let human = 'X';
-let ai = 'O';
+const SCORE_FILE = 'score.json';
 
-let score = {
-  human: 0,
-  ai: 0,
-  draw: 0,
-};
+let board, currentPlayer;
+const human = 'X';
+const ai = 'O';
+
+let score = loadScore();
 
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
+
+function loadScore() {
+  if (fs.existsSync(SCORE_FILE)) {
+    try {
+      return JSON.parse(fs.readFileSync(SCORE_FILE, 'utf8'));
+    } catch (err) {
+      console.error('Error loading score file. Resetting score.');
+    }
+  }
+  return { human: 0, ai: 0, draw: 0 };
+}
+
+function saveScore() {
+  fs.writeFileSync(SCORE_FILE, JSON.stringify(score, null, 2));
+}
 
 function resetBoard() {
   board = [
@@ -128,6 +142,8 @@ function endGame(result) {
     console.log('It\'s a draw!');
     score.draw++;
   }
+
+  saveScore();
 
   console.log(`\nScore:\nYou: ${score.human} | AI: ${score.ai} | Draws: ${score.draw}`);
 
