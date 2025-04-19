@@ -4,23 +4,19 @@ const board = [
     [' ', ' ', ' '],
   ];
   
-  let currentPlayer = 'X'; // Human
-  let aiPlayer = 'O';      // AI
+  const human = 'X';
+  const ai = 'O';
   
   function printBoard() {
     console.log(board.map(row => row.join('|')).join('\n-+-+-\n'));
   }
   
-  function makeMove(row, col, player) {
-    if (board[row][col] === ' ') {
-      board[row][col] = player;
-      return true;
-    }
-    return false;
+  function isMovesLeft() {
+    return board.flat().some(cell => cell === ' ');
   }
   
-  function checkWin(player) {
-    const winLines = [
+  function evaluate() {
+    const lines = [
       [[0, 0], [0, 1], [0, 2]],
       [[1, 0], [1, 1], [1, 2]],
       [[2, 0], [2, 1], [2, 2]],
@@ -31,25 +27,77 @@ const board = [
       [[0, 2], [1, 1], [2, 0]],
     ];
   
-    return winLines.some(line =>
-      line.every(([r, c]) => board[r][c] === player)
-    );
+    for (const [[r1, c1], [r2, c2], [r3, c3]] of lines) {
+      const a = board[r1][c1], b = board[r2][c2], c = board[r3][c3];
+      if (a === b && b === c) {
+        if (a === ai) return +10;
+        if (a === human) return -10;
+      }
+    }
+    return 0;
   }
   
-  function isDraw() {
-    return board.flat().every(cell => cell !== ' ');
+  function minimax(depth, isMaximizing) {
+    const score = evaluate();
+    if (score === 10 || score === -10) return score;
+    if (!isMovesLeft()) return 0;
+  
+    if (isMaximizing) {
+      let best = -Infinity;
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          if (board[r][c] === ' ') {
+            board[r][c] = ai;
+            best = Math.max(best, minimax(depth + 1, false));
+            board[r][c] = ' ';
+          }
+        }
+      }
+      return best;
+    } else {
+      let best = Infinity;
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          if (board[r][c] === ' ') {
+            board[r][c] = human;
+            best = Math.min(best, minimax(depth + 1, true));
+            board[r][c] = ' ';
+          }
+        }
+      }
+      return best;
+    }
   }
   
-  function aiMove() {
+  function bestMove() {
+    let bestVal = -Infinity;
+    let move = [-1, -1];
+  
     for (let r = 0; r < 3; r++) {
       for (let c = 0; c < 3; c++) {
         if (board[r][c] === ' ') {
-          makeMove(r, c, aiPlayer);
-          console.log(`AI moves to ${r}, ${c}`);
-          return;
+          board[r][c] = ai;
+          const moveVal = minimax(0, false);
+          board[r][c] = ' ';
+          if (moveVal > bestVal) {
+            move = [r, c];
+            bestVal = moveVal;
+          }
         }
       }
     }
+  
+    const [r, c] = move;
+    board[r][c] = ai;
+    console.log(`AI moves to ${r}, ${c}`);
+  }
+  
+  function checkWinner(player) {
+    return evaluate() === (player === ai ? 10 : -10);
+  }
+  
+  function isDraw() {
+    return !isMovesLeft() && evaluate() === 0;
   }
   
   function playGame() {
@@ -60,18 +108,20 @@ const board = [
   
     function promptMove() {
       printBoard();
-      readline.question(`Your move (row col): `, (input) => {
+      readline.question('Your move (row col): ', input => {
         const [rowStr, colStr] = input.trim().split(' ');
         const row = parseInt(rowStr);
         const col = parseInt(colStr);
   
-        if (isNaN(row) || isNaN(col) || row > 2 || col > 2 || !makeMove(row, col, currentPlayer)) {
+        if (isNaN(row) || isNaN(col) || row > 2 || col > 2 || board[row][col] !== ' ') {
           console.log('Invalid move. Try again.');
           promptMove();
           return;
         }
   
-        if (checkWin(currentPlayer)) {
+        board[row][col] = human;
+  
+        if (checkWinner(human)) {
           printBoard();
           console.log('You win!');
           readline.close();
@@ -85,9 +135,9 @@ const board = [
           return;
         }
   
-        // AI's turn
-        aiMove();
-        if (checkWin(aiPlayer)) {
+        bestMove();
+  
+        if (checkWinner(ai)) {
           printBoard();
           console.log('AI wins!');
           readline.close();
