@@ -1,20 +1,32 @@
 {
   "players": {
     "Thomas": {
+      "code": "thomas",
       "wins": 0,
-      "draws": 2
+      "draws": 0,
+      "isBot": false
+    },
+    "MysteriousAva": {
+      "isBot": true,
+      "wins": 0,
+      "draws": 0,
+      "competence": 0.4154135630155523,
+      "gamesPlayed": 1
+    },
+    "WittyNico": {
+      "isBot": true,
+      "wins": 0,
+      "draws": 0,
+      "competence": 0.3299099401404288,
+      "gamesPlayed": 1
+    },
+    "Skyler88": {
+      "isBot": true,
+      "wins": 0,
+      "draws": 0,
+      "competence": 0.5041443970647784,
+      "gamesPlayed": 1
     }
   },
-  "history": [
-    {
-      "player": "Thomas",
-      "result": "draw",
-      "date": "2025-04-19T23:30:48.590Z"
-    },
-    {
-      "player": "Thomas",
-      "result": "draw",
-      "date": "2025-04-19T23:32:24.077Z"
-    }
-  ]
+  "history": []
 }
