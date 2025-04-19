@@ -37,19 +37,22 @@ const board = [
     return 0;
   }
   
-  function minimax(depth, isMaximizing) {
+  function minimax(depth, isMax, alpha, beta) {
     const score = evaluate();
     if (score === 10 || score === -10) return score;
     if (!isMovesLeft()) return 0;
   
-    if (isMaximizing) {
+    if (isMax) {
       let best = -Infinity;
       for (let r = 0; r < 3; r++) {
         for (let c = 0; c < 3; c++) {
           if (board[r][c] === ' ') {
             board[r][c] = ai;
-            best = Math.max(best, minimax(depth + 1, false));
+            const val = minimax(depth + 1, false, alpha, beta);
             board[r][c] = ' ';
+            best = Math.max(best, val);
+            alpha = Math.max(alpha, best);
+            if (beta <= alpha) break;
           }
         }
       }
@@ -60,8 +63,11 @@ const board = [
         for (let c = 0; c < 3; c++) {
           if (board[r][c] === ' ') {
             board[r][c] = human;
-            best = Math.min(best, minimax(depth + 1, true));
+            const val = minimax(depth + 1, true, alpha, beta);
             board[r][c] = ' ';
+            best = Math.min(best, val);
+            beta = Math.min(beta, best);
+            if (beta <= alpha) break;
           }
         }
       }
@@ -77,7 +83,7 @@ const board = [
       for (let c = 0; c < 3; c++) {
         if (board[r][c] === ' ') {
           board[r][c] = ai;
-          const moveVal = minimax(0, false);
+          const moveVal = minimax(0, false, -Infinity, Infinity);
           board[r][c] = ' ';
           if (moveVal > bestVal) {
             move = [r, c];
