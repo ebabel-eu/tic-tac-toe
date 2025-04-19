@@ -1,5 +1,20 @@
 {
-  "human": 0,
-  "ai": 2,
-  "draw": 1
+  "players": {
+    "Thomas": {
+      "wins": 0,
+      "draws": 2
+    }
+  },
+  "history": [
+    {
+      "player": "Thomas",
+      "result": "draw",
+      "date": "2025-04-19T23:30:48.590Z"
+    },
+    {
+      "player": "Thomas",
+      "result": "draw",
+      "date": "2025-04-19T23:32:24.077Z"
+    }
+  ]
 }
