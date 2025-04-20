@@ -177,6 +177,10 @@ function queueOrPair(ws) {
     setTimeout(() => {
       if (waitingPlayer === ws) {
         const bot = createBotOpponent(playerSessions.get(ws).name);
+    const botName = bot.name;
+    if (scoreData.players[botName]) {
+      scoreData.players[botName].gamesPlayed += 1;
+    }
         const gameId = generateGameId();
         ws.gameId = gameId;
         activeGames.set(gameId, [ws, bot]);
