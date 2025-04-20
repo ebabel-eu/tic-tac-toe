@@ -35,6 +35,19 @@ function printBoard() {
   console.log('\n' + board.map(row => row.join('|')).join('\n-+-+-\n') + '\n');
 }
 
+function playAgain() {
+  rl.question('\nPlay again? (y/n): ', answer => {
+    if (answer.toLowerCase() === 'y') {
+      resetBoard();
+      login();
+    } else {
+      console.log('Goodbye!');
+      rl.close();
+      ws.close();
+    }
+  });
+}
+
 function resetBoard() {
   board = [
     [' ', ' ', ' '],
@@ -145,16 +158,9 @@ function checkGameOver() {
   }
 
   printBoard();
-  rl.question('\nPlay again? (y/n): ', answer => {
-    if (answer.toLowerCase() === 'y') {
-      resetBoard();
-      login();
-    } else {
-      console.log('Goodbye!');
-      rl.close();
-      ws.close();
-    }
-  });
+// Play again? will be prompted after leaderboard is shown.
+  playAgain();
+
 
   return true;
 }

@@ -1,1 +1,31 @@
-{ "players": {}, "history": [] }
+{
+  "players": {
+    "Thomas": {
+      "code": "thomas",
+      "wins": 0,
+      "draws": 0,
+      "isBot": false
+    },
+    "WittyNico": {
+      "isBot": true,
+      "wins": 0,
+      "draws": 0,
+      "competence": 0.43120825131758456,
+      "gamesPlayed": 1
+    },
+    "Marge": {
+      "code": "simpson",
+      "wins": 0,
+      "draws": 0,
+      "isBot": false
+    },
+    "CrimsonIvy": {
+      "isBot": true,
+      "wins": 0,
+      "draws": 0,
+      "competence": 0.4636293411067006,
+      "gamesPlayed": 1
+    }
+  },
+  "history": []
+}

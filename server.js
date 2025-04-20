@@ -170,7 +170,7 @@ function queueOrPair(ws) {
   } else {
     waitingPlayer = ws;
 
-    const delay = Math.floor(Math.random() * 5000);
+    const delay = Math.floor(Math.random() * 1000);
     setTimeout(() => {
       if (waitingPlayer === ws) {
         const bot = createBotOpponent(playerSessions.get(ws).name);
