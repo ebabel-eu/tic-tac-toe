@@ -1,4 +1,3 @@
-
 const WebSocket = require('ws');
 const readline = require('readline');
 let lastName = '';
@@ -156,7 +155,7 @@ function checkGameOver() {
 
   if (myWin) {
     console.log('You win!');
-    ws.send(JSON.stringify({ type: 'game-over', winner: mySymbol, draw: false }));
+    ws.send(JSON.stringify({ type: 'game-over', winner: lastName, draw: false }));
   } else if (theirWin) {
     console.log(`${opponentName} wins!`);
     ws.send(JSON.stringify({ type: 'game-over', winner: opponentName, draw: false }));

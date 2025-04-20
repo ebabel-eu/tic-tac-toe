@@ -2,8 +2,8 @@
   "players": {
     "Thomas": {
       "code": "thomas",
-      "wins": 0,
-      "draws": 0,
+      "wins": 4,
+      "draws": 1,
       "isBot": false
     },
     "WittyNico": {
@@ -87,6 +87,13 @@
       "wins": 1,
       "draws": 0,
       "competence": 0.661682793051277,
+      "gamesPlayed": 1
+    },
+    "Skyler88": {
+      "isBot": true,
+      "wins": 0,
+      "draws": 0,
+      "competence": 0.6309706949010032,
       "gamesPlayed": 1
     }
   },

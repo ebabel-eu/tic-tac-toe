@@ -1,4 +1,3 @@
-
 const WebSocket = require('ws');
 const fs = require('fs');
 
@@ -13,9 +12,9 @@ const wss = new WebSocket.Server({ port: PORT });
 console.log(`Tic Tac Toe server running on ws://localhost:${PORT}`);
 
 let waitingPlayer = null;
-let activeGames = new Map(); // gameId => [player1, player2]
-let playerSessions = new Map(); // socket => { name, isBot }
-let humanToBotMap = new Map(); // Maps human player name to a bot object
+let activeGames = new Map();
+let playerSessions = new Map();
+let humanToBotMap = new Map();
 
 function loadScore() {
   if (!fs.existsSync(SCORE_FILE)) {
@@ -44,21 +43,18 @@ function getAvailableBotName() {
   const used = new Set(Object.keys(scoreData.players));
   const available = BOT_NAME_POOL.filter(name => !used.has(name));
   if (available.length > 0) return available[Math.floor(Math.random() * available.length)];
-
   const existingBots = Object.entries(scoreData.players).filter(([_, p]) => p.isBot);
   if (existingBots.length > 0) {
     const [name] = existingBots[Math.floor(Math.random() * existingBots.length)];
     return name;
   }
-
   return 'Bot_' + Math.floor(Math.random() * 10000);
 }
 
 function createBotOpponent(realPlayerName) {
   if (humanToBotMap.has(realPlayerName)) {
-      return humanToBotMap.get(realPlayerName);
+    return humanToBotMap.get(realPlayerName);
   }
-
   const name = getAvailableBotName();
   if (!scoreData.players[name]) {
     scoreData.players[name] = {
@@ -69,21 +65,17 @@ function createBotOpponent(realPlayerName) {
       gamesPlayed: 0
     };
   }
-
   scoreData.players[name].gamesPlayed += 1;
-
   const bot = {
-      isBot: true,
-      name,
-      send: () => {},
-      realPlayerName,
-      winsAgainstHuman: 0
+    isBot: true,
+    name,
+    send: () => {},
+    realPlayerName,
+    winsAgainstHuman: 0
   };
-
-  humanToBotMap.set(realPlayerName, bot); // 👈 persist bot identity
+  humanToBotMap.set(realPlayerName, bot);
   return bot;
 }
-  
 
 wss.on('connection', (ws) => {
   ws.on('message', async (msg) => {
@@ -101,7 +93,6 @@ wss.on('connection', (ws) => {
         } else {
           return send(ws, { type: 'login-failed' });
         }
-
         playerSessions.set(ws, { name, isBot: false });
         queueOrPair(ws);
       }
@@ -116,20 +107,24 @@ wss.on('connection', (ws) => {
         const { winner, draw } = data;
         const [p1, p2] = activeGames.get(ws.gameId) || [];
 
-        [p1, p2].forEach(player => {
-          if (!player || !playerSessions.has(player)) return;
-          const name = playerSessions.get(player)?.name;
-          if (!name || !scoreData.players[name]) return;
+        if (draw) {
+          [p1, p2].forEach(player => {
+            const name = playerSessions.get(player)?.name;
+            if (name && scoreData.players[name]) {
+              scoreData.players[name].draws++;
+            }
+          });
+        } else {
+          [p1, p2].forEach(player => {
+            const name = playerSessions.get(player)?.name;
+            if (name === winner && scoreData.players[name]) {
+              scoreData.players[name].wins++;
+            }
+          });
 
-          if (draw) scoreData.players[name].draws++;
-          else if (winner === name) scoreData.players[name].wins++;
-        });
-
-        if (p2?.isBot && !draw && winner === p2.name) {
-          scoreData.players[p2.name].wins++;
-        }
-        if (p2?.isBot && draw) {
-          scoreData.players[p2.name].draws++;
+          if (p2?.isBot && winner === p2.name) {
+            scoreData.players[p2.name].wins++;
+          }
         }
 
         saveScore(scoreData);
@@ -155,11 +150,11 @@ wss.on('connection', (ws) => {
   ws.on('close', () => {
     const session = playerSessions.get(ws);
     if (session?.name) {
-      humanToBotMap.delete(session.name); // 👈 release the bot if human leaves
+      humanToBotMap.delete(session.name);
     }
     playerSessions.delete(ws);
     if (waitingPlayer === ws) waitingPlayer = null;
-  });  
+  });
 });
 
 function queueOrPair(ws) {
@@ -167,7 +162,6 @@ function queueOrPair(ws) {
     const gameId = generateGameId();
     ws.gameId = gameId;
     waitingPlayer.gameId = gameId;
-
     activeGames.set(gameId, [ws, waitingPlayer]);
 
     const p1 = playerSessions.get(waitingPlayer).name;
@@ -179,7 +173,6 @@ function queueOrPair(ws) {
     waitingPlayer = null;
   } else {
     waitingPlayer = ws;
-
     const delay = Math.floor(Math.random() * 1000);
     setTimeout(() => {
       if (waitingPlayer === ws) {
