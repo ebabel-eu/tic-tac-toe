@@ -15,6 +15,7 @@ console.log(`Tic Tac Toe server running on ws://localhost:${PORT}`);
 let waitingPlayer = null;
 let activeGames = new Map(); // gameId => [player1, player2]
 let playerSessions = new Map(); // socket => { name, isBot }
+let humanToBotMap = new Map(); // Maps human player name to a bot object
 
 function loadScore() {
   if (!fs.existsSync(SCORE_FILE)) {
@@ -54,8 +55,11 @@ function getAvailableBotName() {
 }
 
 function createBotOpponent(realPlayerName) {
-  const name = getAvailableBotName();
+  if (humanToBotMap.has(realPlayerName)) {
+      return humanToBotMap.get(realPlayerName);
+  }
 
+  const name = getAvailableBotName();
   if (!scoreData.players[name]) {
     scoreData.players[name] = {
       isBot: true,
@@ -69,15 +73,17 @@ function createBotOpponent(realPlayerName) {
   scoreData.players[name].gamesPlayed += 1;
 
   const bot = {
-    isBot: true,
-    name,
-    send: () => {},
-    realPlayerName,
-    winsAgainstHuman: 0
+      isBot: true,
+      name,
+      send: () => {},
+      realPlayerName,
+      winsAgainstHuman: 0
   };
 
+  humanToBotMap.set(realPlayerName, bot); // 👈 persist bot identity
   return bot;
 }
+  
 
 wss.on('connection', (ws) => {
   ws.on('message', async (msg) => {
@@ -147,9 +153,13 @@ wss.on('connection', (ws) => {
   });
 
   ws.on('close', () => {
+    const session = playerSessions.get(ws);
+    if (session?.name) {
+      humanToBotMap.delete(session.name); // 👈 release the bot if human leaves
+    }
     playerSessions.delete(ws);
     if (waitingPlayer === ws) waitingPlayer = null;
-  });
+  });  
 });
 
 function queueOrPair(ws) {

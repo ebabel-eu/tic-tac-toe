@@ -46,6 +46,48 @@
       "draws": 0,
       "competence": 0.41220227524878167,
       "gamesPlayed": 1
+    },
+    "GhostHarper": {
+      "isBot": true,
+      "wins": 0,
+      "draws": 0,
+      "competence": 0.7507117978098288,
+      "gamesPlayed": 1
+    },
+    "ChillRiley": {
+      "isBot": true,
+      "wins": 1,
+      "draws": 0,
+      "competence": 0.5563356110973143,
+      "gamesPlayed": 1
+    },
+    "PixelTheo": {
+      "isBot": true,
+      "wins": 0,
+      "draws": 0,
+      "competence": 0.4646641055982749,
+      "gamesPlayed": 1
+    },
+    "ShadowLiam": {
+      "isBot": true,
+      "wins": 1,
+      "draws": 0,
+      "competence": 0.7570983336432373,
+      "gamesPlayed": 1
+    },
+    "SilentFinn": {
+      "isBot": true,
+      "wins": 0,
+      "draws": 0,
+      "competence": 0.5064885865490046,
+      "gamesPlayed": 1
+    },
+    "SneakyNoah": {
+      "isBot": true,
+      "wins": 1,
+      "draws": 0,
+      "competence": 0.661682793051277,
+      "gamesPlayed": 1
     }
   },
   "history": []

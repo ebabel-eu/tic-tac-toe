@@ -1,6 +1,8 @@
 
 const WebSocket = require('ws');
 const readline = require('readline');
+let lastName = '';
+let lastCode = '';
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -25,8 +27,16 @@ function prompt(question) {
 }
 
 async function login() {
+  if (lastName && lastCode) {
+    ws.send(JSON.stringify({ type: 'login', name: lastName, code: lastCode }));
+    return;
+  }
+
   const name = await prompt('Enter your name: ');
   const code = await prompt('Enter your secret code: ');
+
+  lastName = name;
+  lastCode = code;
 
   ws.send(JSON.stringify({ type: 'login', name, code }));
 }
@@ -168,7 +178,7 @@ ws.on('open', login);
 ws.on('message', (msg) => {
   const data = JSON.parse(msg);
 
-  if (data.type === 'login-success') {
+  if (data.type === 'login-success' && !lastName && !lastCode) {
     console.log(`Welcome, ${data.name}!`);
   }
 
