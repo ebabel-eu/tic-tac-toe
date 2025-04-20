@@ -158,10 +158,6 @@ function checkGameOver() {
   }
 
   printBoard();
-// Play again? will be prompted after leaderboard is shown.
-  playAgain();
-
-
   return true;
 }
 
@@ -214,5 +210,6 @@ ws.on('message', (msg) => {
       const who = p.isBot ? '(bot)' : '';
       console.log(`${i + 1}. ${p.name} - Wins: ${p.wins}, Draws: ${p.draws} ${who}`);
     });
+    playAgain();
   }
 });

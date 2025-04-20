@@ -25,6 +25,27 @@
       "draws": 0,
       "competence": 0.4636293411067006,
       "gamesPlayed": 1
+    },
+    "MysteriousAva": {
+      "isBot": true,
+      "wins": 0,
+      "draws": 0,
+      "competence": 0.4403720491098601,
+      "gamesPlayed": 1
+    },
+    "EchoZane": {
+      "isBot": true,
+      "wins": 0,
+      "draws": 0,
+      "competence": 0.8284427391001967,
+      "gamesPlayed": 1
+    },
+    "LunaMax": {
+      "isBot": true,
+      "wins": 0,
+      "draws": 0,
+      "competence": 0.41220227524878167,
+      "gamesPlayed": 1
     }
   },
   "history": []
